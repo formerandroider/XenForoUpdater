@@ -2,17 +2,35 @@
 
 class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools
 {
-	public function actionXenForoUpdate()
+	public function actionUpdateXenForo()
 	{
 		$this->_assertRootWritable();
 
-		return $this->responseView('', 'liam_xenforo_update');
+		return $this->responseView('', 'liam_xenforo_update_initial');
 	}
 
-	public function actionDoXenForoUpdateStep1()
+	public function actionUpdateXenForoStepCredentials()
 	{
 		$this->_assertPostOnly();
 		$this->_assertRootWritable();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		return $this->responseView('', 'liam_xenforo_update_credentials');
+	}
+
+	public function actionUpdateXenForoStepLicense()
+	{
+		$this->_assertPostOnly();
+		$this->_assertRootWritable();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
 
 		$data = $this->_input->filter(array(
 			'email' => XenForo_Input::STRING,
@@ -76,13 +94,18 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'cookies' => $client->getCookieJar()->getAllCookies(Zend_Http_CookieJar::COOKIE_STRING_CONCAT)
 		);
 
-		return $this->responseView('', 'liam_xenforo_update_step1', $viewParams);
+		return $this->responseView('', 'liam_xenforo_update_licenses', $viewParams);
 	}
 
-	public function actionDoXenForoUpdateStep2()
+	public function actionUpdateXenForoStepVersion()
 	{
 		$this->_assertPostOnly();
 		$this->_assertRootWritable();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
 
 		$data = $this->_input->filter(array(
 			'license_id' => XenForo_Input::STRING,
@@ -96,7 +119,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 		if (!$data['license_id'])
 		{
-			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_please_select_license'));
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
 		}
 
 		$client = XenForo_Helper_Http::getClient("https://xenforo.com/customers/download/", array(
@@ -139,12 +162,19 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'cookies' => $client->getCookieJar()->getAllCookies(Zend_Http_CookieJar::COOKIE_STRING_CONCAT)
 		);
 
-		return $this->responseView('', 'liam_xenforo_update_step2', $viewParams);
+		return $this->responseView('', 'liam_xenforo_update_version', $viewParams);
 	}
 
-	public function actionDoXenForoUpdateStep3()
+	public function actionUpdateXenForoStepUpdate()
 	{
 		$this->_assertPostOnly();
+		$this->_assertRootWritable();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
 		@set_time_limit(0);
 		@ignore_user_abort(true);
 
