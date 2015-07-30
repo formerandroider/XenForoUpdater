@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="liam_xenforoUpdater" title="XenForo Updater" version_string="Beta 3" version_id="3" url="https://xf-liam.com" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation>
+    <navigation navigation_id="liam_updateXenForo" parent_navigation_id="toolsGroups" display_order="50000" link="tools/xenforo-update" admin_permission_id="upgradeXenForo" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="liam_xenforo_update"><![CDATA[<xen:title>{xen:phrase liam_xenforoupdater_update_xenforo}</xen:title>
+
+<xen:form action="{xen:adminlink 'tools/do-xenforo-update-step-1'}" method="post">
+	
+	<xen:textboxunit name="email" label="{xen:phrase liam_xenforoupdater_xenforo_email}:" />
+	
+	<xen:textboxunit name="password" type="password" label="{xen:phrase liam_xenforoupdater_xenforo_password}:" />
+	
+	<xen:submitunit save="{xen:phrase continue}..." />
+</xen:form>]]></template>
+    <template title="liam_xenforo_update_step1"><![CDATA[<xen:title>{xen:phrase liam_xenforoupdater_update_xenforo}</xen:title>
+
+<xen:form action="{xen:adminlink 'tools/do-xenforo-update-step-2'}" method="post">
+	
+	<p>{xen:phrase liam_xenforoupdater_please_select_license}</p>
+	
+	<xen:selectunit name="license_id" label="{xen:phrase liam_xenforoupdater_license}:">
+		<xen:option value="">({xen:phrase liam_xenforoupdater_select_license})</xen:option>
+		<xen:foreach loop="$licenses" key="$licenseId" value="$licenseName">
+			<xen:option value="{$licenseId}" selected="stripos({$xenOptions.boardTitle}, {$licenseName}) !== false">{$licenseName}</xen:option>
+		</xen:foreach>
+	</xen:selectunit>
+	
+	<xen:submitunit save="{xen:phrase continue}..." />
+	
+
+	<input type="hidden" name="cookies" value="{$cookies}" />
+</xen:form>]]></template>
+    <template title="liam_xenforo_update_step2"><![CDATA[<xen:title>{xen:phrase liam_xenforoupdater_update_xenforo}</xen:title>
+
+<xen:form action="{xen:adminlink 'tools/do-xenforo-update-step-3'}" method="post">
+	
+	<p>{xen:phrase liam_xenforoupdater_please_select_version}</p>
+	
+	<xen:selectunit name="download_version_id" label="{xen:phrase liam_xenforoupdater_version}:">
+		<xen:options source="$versions" />
+	</xen:selectunit>
+	
+	<xen:submitunit save="{xen:phrase liam_xenforoupdater_update_xenforo}" />
+	
+	<input type="hidden" name="cookies" value="{$cookies}" />
+	<input type="hidden" name="license_id" value="{$licenseId}" />
+</xen:form>]]></template>
+  </admin_templates>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="LiamW_XenForoUpdater_Listener" callback_method="extendToolsController" active="1" hint="XenForo_ControllerAdmin_Tools" description="XenForo_ControllerAdmin_Tools"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_liam_updateXenForo" version_id="10000" version_string="1.0.0"><![CDATA[Update XenForo]]></phrase>
+    <phrase title="liam_xenforoupdater_cookies_missing" version_id="10000" version_string="1.0.0"><![CDATA[The cookie parameter is missing from the request!]]></phrase>
+    <phrase title="liam_xenforoupdater_invalid_credentials" version_id="10000" version_string="1.0.0"><![CDATA[Please provide valid credentials.]]></phrase>
+    <phrase title="liam_xenforoupdater_invalid_credentials_or_no_licenses" version_id="10000" version_string="1.0.0"><![CDATA[The login to the XenForo customer area failed or you have no downloadable licenses.]]></phrase>
+    <phrase title="liam_xenforoupdater_license" version_id="10000" version_string="1.0.0"><![CDATA[License]]></phrase>
+    <phrase title="liam_xenforoupdater_no_downloads" version_id="2" version_string="Beta 2"><![CDATA[There are no downloads available for the requested license. Did you change the license ID in the HTML?]]></phrase>
+    <phrase title="liam_xenforoupdater_please_select_license" version_id="10000" version_string="1.0.0"><![CDATA[Please select the license to download and update this installation to.]]></phrase>
+    <phrase title="liam_xenforoupdater_please_select_version" version_id="10000" version_string="1.0.0"><![CDATA[Please select the version you wish to update to:]]></phrase>
+    <phrase title="liam_xenforoupdater_root_not_writable" version_id="1" version_string="Beta 1"><![CDATA[The XenForo root directory is not writable. Please make the XF root directory writable to use this add-on.]]></phrase>
+    <phrase title="liam_xenforoupdater_select_license" version_id="2" version_string="Beta 2"><![CDATA[Select License]]></phrase>
+    <phrase title="liam_xenforoupdater_unable_to_create_directory" version_id="10000" version_string="1.0.0"><![CDATA[We were unable to create the directory to store update files in.]]></phrase>
+    <phrase title="liam_xenforoupdater_unable_to_extract_zip" version_id="1" version_string="Beta 1"><![CDATA[We were unable to extract the upgrade zip.]]></phrase>
+    <phrase title="liam_xenforoupdater_update_xenforo" version_id="10000" version_string="1.0.0"><![CDATA[Update XenForo]]></phrase>
+    <phrase title="liam_xenforoupdater_version" version_id="10000" version_string="1.0.0"><![CDATA[Version]]></phrase>
+    <phrase title="liam_xenforoupdater_xenforo_email" version_id="10000" version_string="1.0.0"><![CDATA[XenForo Customer Email]]></phrase>
+    <phrase title="liam_xenforoupdater_xenforo_password" version_id="10000" version_string="1.0.0"><![CDATA[XenForo Customer Password]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications/>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
