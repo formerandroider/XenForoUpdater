@@ -4,15 +4,12 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 {
 	public function actionUpdateXenForo()
 	{
-		$this->_assertRootWritable();
-
 		return $this->responseView('', 'liam_xenforo_update_initial');
 	}
 
 	public function actionUpdateXenForoStepCredentials()
 	{
 		$this->_assertPostOnly();
-		$this->_assertRootWritable();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -25,7 +22,6 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateXenForoStepLicense()
 	{
 		$this->_assertPostOnly();
-		$this->_assertRootWritable();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -100,7 +96,6 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateXenForoStepVersion()
 	{
 		$this->_assertPostOnly();
-		$this->_assertRootWritable();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -148,6 +143,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		foreach ($versionsQuery as $version)
 		{
 			$downloadVersions[$version->getAttribute('value')] = array(
+				'value' => $version->getAttribute('value'),
 				'label' => $version->textContent,
 				'selected' => $version->getAttribute('selected') == 'selected' && (substr(XenForo_Application::$versionId,
 							5, 1) == 7 || substr(XenForo_Application::$versionId, 5, 1) == 9)
@@ -168,7 +164,6 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateXenForoStepUpdate()
 	{
 		$this->_assertPostOnly();
-		$this->_assertRootWritable();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -183,6 +178,11 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'license_id' => XenForo_Input::STRING,
 			'cookies' => XenForo_Input::STRING,
 		));
+
+		if (!$data['license_id'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
+		}
 
 		if (!$data['cookies'])
 		{
@@ -235,14 +235,6 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			XenForo_Application::getInstance()->getRootDir());
 
 		return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, '/install/index.php?upgrade/');
-	}
-
-	protected function _assertRootWritable()
-	{
-		if (!is_writable(XenForo_Application::getInstance()->getRootDir()))
-		{
-			throw $this->responseException($this->responseError(new XenForo_Phrase('liam_xenforoupdater_root_not_writable')));
-		}
 	}
 }
 
