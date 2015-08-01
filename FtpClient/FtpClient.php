@@ -21,6 +21,8 @@ class LiamW_XenForoUpdater_FtpClient_FtpClient implements Countable
 	 */
 	private $ftp;
 
+	protected $_originalTarget;
+
 	/**
 	 * Constructor.
 	 *
@@ -611,6 +613,11 @@ class LiamW_XenForoUpdater_FtpClient_FtpClient implements Countable
 	{
 		$d = dir($source_directory);
 
+		if (!$this->_originalTarget)
+		{
+			$this->_originalTarget = $target_directory;
+		}
+
 		// do this for each file in the directory
 		while ($file = $d->read())
 		{
@@ -645,7 +652,11 @@ class LiamW_XenForoUpdater_FtpClient_FtpClient implements Countable
 						$mode
 					);
 
-					LiamW_XenForoUpdater_Helper::opcacheInvalidateFile($source_directory . '/' . $file);
+					$realPath = realpath(str_replace($this->_originalTarget,
+						XenForo_Application::getInstance()->getRootDir(),
+						$target_directory . '/' . $file));
+
+					LiamW_XenForoUpdater_Helper::opcacheInvalidateFile($realPath);
 				}
 			}
 		}
