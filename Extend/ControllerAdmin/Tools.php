@@ -213,7 +213,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		$client->setParameterPost('l', $data['license_id']);
 		$client->setParameterPost('d', 'xenforo');
 
-		$client->request('POST');
+		//$client->request('POST');
 
 		XenForo_Helper_File::createDirectory($streamDir . $data['download_version_id'] . '/');
 
@@ -231,8 +231,46 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_unable_to_extract_zip'));
 		}
 
-		LiamW_XenForoUpdater_Helper::recursiveCopy($streamDir . $data['download_version_id'] . '/upload',
-			XenForo_Application::getInstance()->getRootDir());
+		if ($this->_input->filterSingle('ftp_upload', XenForo_Input::BOOLEAN))
+		{
+			$ftpData = $this->_input->filter(array(
+				'host' => XenForo_Input::STRING,
+				'port' => XenForo_Input::INT,
+				'user' => XenForo_Input::STRING,
+				'password' => XenForo_Input::STRING,
+				'xf_path' => XenForo_Input::STRING
+			));
+
+			if (empty($ftpData['host']))
+			{
+				$ftpData['host'] = '127.0.0.1';
+			}
+			if (empty($ftpData['port']))
+			{
+				$ftpData['port'] = 21;
+			}
+			if (empty($ftpData['xf_path']))
+			{
+				$ftpData['xf_path'] = 'public_html';
+			}
+
+			try
+			{
+				$ftp = new LiamW_XenForoUpdater_FtpClient_FtpClient();
+				$ftp->connect($ftpData['host'], false, $ftpData['port']);
+				$ftp->login($ftpData['user'], $ftpData['password']);
+
+				$ftp->putAll($streamDir . $data['download_version_id'] . '/upload', $ftpData['xf_path']);
+			} catch (Exception $e)
+			{
+				return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_ftp_upload_failed'));
+			}
+		}
+		else
+		{
+			LiamW_XenForoUpdater_Helper::recursiveCopy($streamDir . $data['download_version_id'] . '/upload',
+				XenForo_Application::getInstance()->getRootDir());
+		}
 
 		return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, '/install/index.php?upgrade/');
 	}

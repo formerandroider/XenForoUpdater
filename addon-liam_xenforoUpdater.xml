@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_xenforoUpdater" title="XenForo Updater" version_string="1.0.0 Beta 4" version_id="1000034" url="https://xf-liam.com" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+<addon addon_id="liam_xenforoUpdater" title="XenForo Updater" version_string="1.0.0 Beta 5" version_id="1000035" url="https://xf-liam.com" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
   <admin_navigation>
     <navigation navigation_id="liam_updateXenForo" parent_navigation_id="toolsGroups" display_order="50000" link="tools/update-xenforo" admin_permission_id="upgradeXenForo" debug_only="0" hide_no_children="0"/>
   </admin_navigation>
@@ -56,6 +56,28 @@
 		<xen:options source="$versions" />
 	</xen:selectunit>
 	
+	<xen:checkboxunit label="">
+		<xen:option name="ftp_upload" label="{xen:phrase liam_xenforoupdater_ftp_upload}" inputclass="Hider">
+			<xen:disabled>
+				<xen:controlunit label="{xen:phrase liam_xenforoupdater_host}:">
+					<xen:textbox placeholder="127.0.0.1" name="host" size="25" />:<xen:textbox name="port" size="2" placeholder="21" />
+				</xen:controlunit>
+				
+				<xen:textboxunit label="{xen:phrase liam_xenforoupdater_user}:" name="user" />
+				<xen:textboxunit label="{xen:phrase liam_xenforoupdater_password}:" type="password" name="password" />
+					
+				<xen:checkboxunit label="">
+					<xen:option name="ssl" label="{xen:phrase liam_xenforoupdater_ssl}" />
+				</xen:checkboxunit>
+					
+				<xen:textboxunit label="{xen:phrase liam_xenforoupdater_xenforo_path}:" name="xf_path" placeholder="public_html">
+					<xen:explain>{xen:phrase liam_xenforoupdater_xenforo_path_explain}</xen:explain>
+				</xen:textboxunit>
+			</xen:disabled>
+		</xen:option>
+		<xen:explain>{xen:phrase liam_xenforoupdater_ftp_upload_explain}</xen:explain>
+	</xen:checkboxunit>
+	
 	<xen:submitunit save="{xen:phrase liam_xenforoupdater_update_xenforo}" />
 	
 	<input type="hidden" name="cookies" value="{$cookies}" />
@@ -82,6 +104,9 @@
     <phrase title="liam_xenforoupdater_choose_version" version_id="3" version_string="Beta 3"><![CDATA[Choose Version]]></phrase>
     <phrase title="liam_xenforoupdater_cookies_missing" version_id="10000" version_string="1.0.0"><![CDATA[The cookie parameter is missing from the request!]]></phrase>
     <phrase title="liam_xenforoupdater_customer_area_credentials" version_id="3" version_string="Beta 3"><![CDATA[Customer Area Credentials]]></phrase>
+    <phrase title="liam_xenforoupdater_ftp_upload" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[FTP Upload]]></phrase>
+    <phrase title="liam_xenforoupdater_ftp_upload_explain" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[This will upload the files to the server using an FTP or FTPS connection, rather than by copying them directly.]]></phrase>
+    <phrase title="liam_xenforoupdater_host" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[Host]]></phrase>
     <phrase title="liam_xenforoupdater_information" version_id="3" version_string="Beta 3"><![CDATA[Information]]></phrase>
     <phrase title="liam_xenforoupdater_initial_information" version_id="3" version_string="Beta 3"><![CDATA[<p>This system will update your XenForo installation to the version you choose. Please confirm the following before continuing:
 
@@ -97,16 +122,22 @@
     <phrase title="liam_xenforoupdater_license" version_id="10000" version_string="1.0.0"><![CDATA[License]]></phrase>
     <phrase title="liam_xenforoupdater_must_select_license" version_id="3" version_string="Beta 3"><![CDATA[You must select a license to continue. Please press the back button to select a license.]]></phrase>
     <phrase title="liam_xenforoupdater_no_downloads" version_id="2" version_string="Beta 2"><![CDATA[There are no downloads available for the requested license. Did you change the license ID in the HTML?]]></phrase>
+    <phrase title="liam_xenforoupdater_password" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[Password]]></phrase>
     <phrase title="liam_xenforoupdater_please_select_license" version_id="3" version_string="Beta 3"><![CDATA[Please select the license to use for update:]]></phrase>
     <phrase title="liam_xenforoupdater_please_select_version" version_id="10000" version_string="1.0.0"><![CDATA[Please select the version you wish to update to:]]></phrase>
+    <phrase title="liam_xenforoupdater_port" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[Port]]></phrase>
     <phrase title="liam_xenforoupdater_root_not_writable" version_id="1" version_string="Beta 1"><![CDATA[The XenForo root directory is not writable. Please make the XF root directory writable to use this add-on.]]></phrase>
     <phrase title="liam_xenforoupdater_select_license" version_id="2" version_string="Beta 2"><![CDATA[Select License]]></phrase>
+    <phrase title="liam_xenforoupdater_ssl" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[Connect using SSL]]></phrase>
     <phrase title="liam_xenforoupdater_unable_to_create_directory" version_id="10000" version_string="1.0.0"><![CDATA[We were unable to create the directory to store update files in.]]></phrase>
     <phrase title="liam_xenforoupdater_unable_to_extract_zip" version_id="1" version_string="Beta 1"><![CDATA[We were unable to extract the upgrade zip.]]></phrase>
     <phrase title="liam_xenforoupdater_update_xenforo" version_id="10000" version_string="1.0.0"><![CDATA[Update XenForo]]></phrase>
+    <phrase title="liam_xenforoupdater_user" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[User]]></phrase>
     <phrase title="liam_xenforoupdater_version" version_id="10000" version_string="1.0.0"><![CDATA[Version]]></phrase>
     <phrase title="liam_xenforoupdater_xenforo_email" version_id="10000" version_string="1.0.0"><![CDATA[XenForo Customer Email]]></phrase>
     <phrase title="liam_xenforoupdater_xenforo_password" version_id="10000" version_string="1.0.0"><![CDATA[XenForo Customer Password]]></phrase>
+    <phrase title="liam_xenforoupdater_xenforo_path" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[XenForo Path]]></phrase>
+    <phrase title="liam_xenforoupdater_xenforo_path_explain" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[This is the path to your XenForo <i>installation</i>, as accessed from your FTP server.]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
