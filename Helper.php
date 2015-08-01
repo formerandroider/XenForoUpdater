@@ -29,7 +29,7 @@ class LiamW_XenForoUpdater_Helper
 				copy($dirInfo->getRealPath(), $destination . '/' . $dirInfo->getFilename());
 				if ($resetOpcache)
 				{
-					self::_opcacheInvalidateFile($destination . '/' . $dirInfo->getFilename());
+					self::opcacheInvalidateFile($destination . '/' . $dirInfo->getFilename());
 				}
 			}
 			else if (!$dirInfo->isDot() && $dirInfo->isDir())
@@ -46,7 +46,7 @@ class LiamW_XenForoUpdater_Helper
 	 *
 	 * @param string $file The file to reset.
 	 */
-	protected static function _opcacheInvalidateFile($file)
+	public static function opcacheInvalidateFile($file)
 	{
 		@opcache_invalidate($file, true);
 	}

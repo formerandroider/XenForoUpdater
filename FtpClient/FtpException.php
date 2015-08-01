@@ -16,4 +16,6 @@
  * @inheritDoc
  * @author Nicolas Tallefourtane <dev@nicolab.net>
  */
-class LiamW_XenForoUpdater_FtpClient_FtpException extends \Exception {}
+class LiamW_XenForoUpdater_FtpClient_FtpException extends \Exception
+{
+}
