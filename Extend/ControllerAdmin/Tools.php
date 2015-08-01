@@ -238,6 +238,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 				'port' => XenForo_Input::INT,
 				'user' => XenForo_Input::STRING,
 				'password' => XenForo_Input::STRING,
+				'ssl' => XenForo_Input::BOOLEAN,
 				'xf_path' => XenForo_Input::STRING
 			));
 
@@ -257,7 +258,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			try
 			{
 				$ftp = new LiamW_XenForoUpdater_FtpClient_FtpClient();
-				$ftp->connect($ftpData['host'], false, $ftpData['port']);
+				$ftp->connect($ftpData['host'], $ftpData['ssl'], $ftpData['port']);
 				$ftp->login($ftpData['user'], $ftpData['password']);
 
 				$ftp->putAll($streamDir . $data['download_version_id'] . '/upload', $ftpData['xf_path']);
