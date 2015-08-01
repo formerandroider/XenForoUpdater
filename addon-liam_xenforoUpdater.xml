@@ -109,10 +109,10 @@
     <phrase title="liam_xenforoupdater_ftp_upload_failed" version_id="1000035" version_string="1.0.0 Beta 5"><![CDATA[FTP Upload Failed. Check the server error log for more info.]]></phrase>
     <phrase title="liam_xenforoupdater_host" version_id="1000034" version_string="1.0.0 Beta 4"><![CDATA[Host]]></phrase>
     <phrase title="liam_xenforoupdater_information" version_id="3" version_string="Beta 3"><![CDATA[Information]]></phrase>
-    <phrase title="liam_xenforoupdater_initial_information" version_id="3" version_string="Beta 3"><![CDATA[<p>This system will update your XenForo installation to the version you choose. Please confirm the following before continuing:
+    <phrase title="liam_xenforoupdater_initial_information" version_id="1000035" version_string="1.0.0 Beta 5"><![CDATA[<p>This system will update your XenForo installation to the version you choose. Please confirm the following before continuing:
 
 <ul>
-<li>You're XenForo root directory is <em>recursively</em> writable by the PHP user.</li>
+<li>You're XenForo root directory is <em>recursively</em> writable by the PHP user, or you have a working FTP system for your XenForo root directory.</li>
 <li>You have access to the XenForo Customer Area, and know the username and password.</li>
 </ul>
 </p>
