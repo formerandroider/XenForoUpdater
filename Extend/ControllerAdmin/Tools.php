@@ -213,7 +213,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		$client->setParameterPost('l', $data['license_id']);
 		$client->setParameterPost('d', 'xenforo');
 
-		//$client->request('POST');
+		$client->request('POST');
 
 		XenForo_Helper_File::createDirectory($streamDir . $data['download_version_id'] . '/');
 
