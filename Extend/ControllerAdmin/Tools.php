@@ -263,6 +263,8 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 				$ftp->putAll($streamDir . $data['download_version_id'] . '/upload', $ftpData['xf_path']);
 			} catch (Exception $e)
 			{
+				XenForo_Error::logException($e);
+
 				return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_ftp_upload_failed'));
 			}
 		}
