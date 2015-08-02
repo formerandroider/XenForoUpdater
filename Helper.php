@@ -48,6 +48,9 @@ class LiamW_XenForoUpdater_Helper
 	 */
 	public static function opcacheInvalidateFile($file)
 	{
-		@opcache_invalidate($file, true);
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($file, true);
+		}
 	}
 }
