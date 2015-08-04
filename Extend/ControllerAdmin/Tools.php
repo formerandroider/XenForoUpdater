@@ -245,6 +245,254 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'Upgrade'); // Use the default add-on upgrade system for the rest.
 	}
 
+	public function actionUpdateXenForoMG()
+	{
+		return $this->responseView('', 'liam_xenforo_update_mg_initial');
+	}
+
+	public function actionUpdateXenForoMGStepCredentials()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		return $this->responseView('', 'liam_xenforo_update_mg_credentials');
+	}
+
+	public function actionUpdateXenForoMGStepLicense()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		$data = $this->_input->filter(array(
+			'email' => XenForo_Input::STRING,
+			'password' => XenForo_Input::STRING,
+		));
+
+		if (!$data['email'] || !$data['password'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_credentials'));
+		}
+
+		$licenses = $this->_getLicenses($data['email'], $data['password'], $cookies, 'xfgallery');
+
+		if (!count($licenses))
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_credentials_or_no_licenses'));
+		}
+
+		$viewParams = array(
+			'licenses' => $licenses,
+			'cookies' => $cookies
+		);
+
+		return $this->responseView('', 'liam_xenforo_update_mg_licenses', $viewParams);
+	}
+
+	public function actionUpdateXenForoMGStepVersion()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		$data = $this->_input->filter(array(
+			'license_id' => XenForo_Input::STRING,
+			'cookies' => XenForo_Input::STRING,
+		));
+
+		if (!$data['cookies'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
+		}
+
+		if (!$data['license_id'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
+		}
+
+		$downloadVersions = $this->_getVersions($data['cookies'], $data['license_id'], 'xfgallery');
+
+		$viewParams = array(
+			'versions' => $downloadVersions,
+			'licenseId' => $data['license_id'],
+			'cookies' => $data['cookies']
+		);
+
+		return $this->responseView('', 'liam_xenforo_update_mg_version', $viewParams);
+	}
+
+	public function actionUpdateXenForoMGStepUpdate()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		@set_time_limit(0);
+		@ignore_user_abort(true);
+
+		$data = $this->_input->filter(array(
+			'download_version_id' => XenForo_Input::STRING,
+			'license_id' => XenForo_Input::STRING,
+			'cookies' => XenForo_Input::STRING,
+		));
+
+		if (!$data['license_id'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
+		}
+
+		if (!$data['cookies'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
+		}
+
+		$this->_downloadAndCopyZip($data['cookies'], $data['download_version_id'], $data['license_id'], 'xfgallery');
+
+		$this->_request->setParam('addon_id', 'XenGallery');
+		$this->_request->setParam('server_file',
+			realpath(XenForo_Application::getInstance()->getRootDir() . '/library/XenGallery/addon-XenGallery.xml'));
+
+		return $this->responseReroute('XenForo_ControllerAdmin_AddOn',
+			'Upgrade'); // Use the default add-on upgrade system for the rest.
+	}
+
+	public function actionUpdateXenForoES()
+	{
+		return $this->responseView('', 'liam_xenforo_update_es_initial');
+	}
+
+	public function actionUpdateXenForoESStepCredentials()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		return $this->responseView('', 'liam_xenforo_update_es_credentials');
+	}
+
+	public function actionUpdateXenForoESStepLicense()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		$data = $this->_input->filter(array(
+			'email' => XenForo_Input::STRING,
+			'password' => XenForo_Input::STRING,
+		));
+
+		if (!$data['email'] || !$data['password'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_credentials'));
+		}
+
+		$licenses = $this->_getLicenses($data['email'], $data['password'], $cookies, 'xfsearch');
+
+		if (!count($licenses))
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_credentials_or_no_licenses'));
+		}
+
+		$viewParams = array(
+			'licenses' => $licenses,
+			'cookies' => $cookies
+		);
+
+		return $this->responseView('', 'liam_xenforo_update_es_licenses', $viewParams);
+	}
+
+	public function actionUpdateXenForoESStepVersion()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		$data = $this->_input->filter(array(
+			'license_id' => XenForo_Input::STRING,
+			'cookies' => XenForo_Input::STRING,
+		));
+
+		if (!$data['cookies'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
+		}
+
+		if (!$data['license_id'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
+		}
+
+		$downloadVersions = $this->_getVersions($data['cookies'], $data['license_id'], 'xfsearch');
+
+		$viewParams = array(
+			'versions' => $downloadVersions,
+			'licenseId' => $data['license_id'],
+			'cookies' => $data['cookies']
+		);
+
+		return $this->responseView('', 'liam_xenforo_update_es_version', $viewParams);
+	}
+
+	public function actionUpdateXenForoESStepUpdate()
+	{
+		$this->_assertPostOnly();
+
+		if (!$this->isConfirmedPost())
+		{
+			return $this->responseNoPermission();
+		}
+
+		@set_time_limit(0);
+		@ignore_user_abort(true);
+
+		$data = $this->_input->filter(array(
+			'download_version_id' => XenForo_Input::STRING,
+			'license_id' => XenForo_Input::STRING,
+			'cookies' => XenForo_Input::STRING,
+		));
+
+		if (!$data['license_id'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
+		}
+
+		if (!$data['cookies'])
+		{
+			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
+		}
+
+		$this->_downloadAndCopyZip($data['cookies'], $data['download_version_id'], $data['license_id'], 'xfsearch');
+
+		$this->_request->setParam('addon_id', 'XenES');
+		$this->_request->setParam('server_file',
+			realpath(XenForo_Application::getInstance()->getRootDir() . '/library/XenES/addon-XenES.xml'));
+
+		return $this->responseReroute('XenForo_ControllerAdmin_AddOn',
+			'Upgrade'); // Use the default add-on upgrade system for the rest.
+	}
+
 	protected function _getLicenses($email, $password, &$cookies, $type = 'xenforo')
 	{
 		$client = XenForo_Helper_Http::getClient("https://xenforo.com/customers/login", array(
