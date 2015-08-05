@@ -49,6 +49,20 @@
 	<input type="hidden" name="cookies" value="{$cookies}" />
 	<input type="hidden" name="_xfConfirm" value="1" />
 </xen:form>]]></template>
+    <template title="liam_xenforo_update_product"><![CDATA[<xen:title>{xen:phrase liam_xenforoupdater_update_xenforo_products} - {xen:phrase liam_xenforoupdater_product}</xen:title>
+
+<xen:form action="{xen:adminlink 'tools/update/step/credentials'}" method="post">
+	<p>{xen:phrase liam_xenforoupdater_select_product_to_update}:</p>
+
+	<xen:selectunit label="{xen:phrase liam_xenforoupdater_product}:" name="product">
+		<xen:option value="">({xen:phrase liam_xenforoupdater_select_product})</xen:option>
+		<xen:options source="$availableProducts" />
+	</xen:selectunit>
+
+	<xen:submitunit save="{xen:phrase continue}..." />
+	
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
     <template title="liam_xenforo_update_version"><![CDATA[<xen:title>{xen:phrase liam_xenforoupdater_update} {$productName} - {xen:phrase liam_xenforoupdater_choose_version}</xen:title>
 
 <xen:form action="{xen:adminlink 'tools/update/step/update'}" method="post">
