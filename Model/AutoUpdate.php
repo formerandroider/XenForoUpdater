@@ -11,7 +11,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 	const PRODUCT_XENFORO = 'xenforo';
 	const PRODUCT_RESOURCE_MANAGER = 'xfresource';
-	const PRODUCT_MEDIA_GALLERY = 'xfgallery';
+	const PRODUCT_MEDIA_GALLERY = 'xfmg';
 	const PRODUCT_ENHANCED_SEARCH = 'xfes';
 
 	public function getAvailableProducts()
