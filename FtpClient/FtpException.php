@@ -4,7 +4,7 @@
  *
  * (c) Nicolas Tallefourtane <dev@nicolab.net>
  *
- * For the full copyright and license information, please view the LICENSE
+ * For the full copyright and license information, please view the FtpClient-LICENSE
  * file that was distributed with this source code.
  *
  * @copyright Nicolas Tallefourtane http://nicolab.net
