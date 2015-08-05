@@ -1,6 +1,6 @@
 <?php
 
-class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools2
+class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools
 {
 	public function actionUpdate()
 	{
@@ -26,7 +26,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		}
 
 		$viewParams = array(
-			'availableProducts' => $availableProducts,
+			'availableProducts' => $availableProductsReturn,
 		);
 
 		return $this->responseView('', 'liam_xenforo_update_product', $viewParams);
@@ -41,7 +41,13 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			return $this->responseNoPermission();
 		}
 
-		return $this->responseView('', 'liam_xenforo_update_credentials');
+		$viewParams = array(
+			'product' => $this->_input->filterSingle('product', XenForo_Input::STRING)
+		);
+
+		$viewParams['productName'] = new XenForo_Phrase('liam_xenforoupdater_update_' . $viewParams['product']);
+
+		return $this->responseView('', 'liam_xenforo_update_credentials', $viewParams);
 	}
 
 	public function actionUpdateStepLicense()
@@ -77,6 +83,9 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'cookies' => $cookies,
 			'product' => $data['product']
 		);
+
+		$viewParams['productName'] = new XenForo_Phrase('liam_xenforoupdater_update_' . $viewParams['product']);
+
 
 		return $this->responseView('', 'liam_xenforo_update_licenses', $viewParams);
 	}
@@ -115,6 +124,8 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'cookies' => $data['cookies'],
 			'product' => $data['product']
 		);
+
+		$viewParams['productName'] = new XenForo_Phrase('liam_xenforoupdater_update_' . $viewParams['product']);
 
 		return $this->responseView('', 'liam_xenforo_update_version', $viewParams);
 	}
@@ -202,7 +213,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 if (false)
 {
-	class XFCP_LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools2 extends XenForo_ControllerAdmin_Tools
+	class XFCP_LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XenForo_ControllerAdmin_Tools
 	{
 	}
 }

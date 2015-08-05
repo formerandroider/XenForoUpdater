@@ -173,7 +173,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		}
 		$client->setParameterPost('agree', 1);
 		$client->setParameterPost('l', $licenseId);
-		$client->setParameterPost('d', $type);
+		$client->setParameterPost('d', $product);
 
 		$client->request('POST');
 
