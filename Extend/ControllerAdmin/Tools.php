@@ -45,6 +45,8 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'product' => $this->_input->filterSingle('product', XenForo_Input::STRING)
 		);
 
+		$this->_assertValidProduct($viewParams['product']);
+
 		$viewParams['productName'] = new XenForo_Phrase('liam_xenforoupdater_update_' . $viewParams['product']);
 
 		return $this->responseView('', 'liam_xenforo_update_credentials', $viewParams);
@@ -64,6 +66,8 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'password' => XenForo_Input::STRING,
 			'product' => XenForo_Input::STRING
 		));
+
+		$this->_assertValidProduct($data['product']);
 
 		if (!$data['email'] || !$data['password'])
 		{
@@ -105,6 +109,8 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'product' => XenForo_Input::STRING
 		));
 
+		$this->_assertValidProduct($data['product']);
+
 		if (!$data['cookies'])
 		{
 			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
@@ -139,15 +145,14 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			return $this->responseNoPermission();
 		}
 
-		@set_time_limit(0);
-		@ignore_user_abort(true);
-
 		$data = $this->_input->filter(array(
 			'download_version_id' => XenForo_Input::STRING,
 			'license_id' => XenForo_Input::STRING,
 			'cookies' => XenForo_Input::STRING,
 			'product' => XenForo_Input::STRING
 		));
+
+		$this->_assertValidProduct($data['product']);
 
 		if (!$data['license_id'])
 		{
@@ -158,6 +163,9 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		{
 			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
 		}
+
+		@set_time_limit(0);
+		@ignore_user_abort(true);
 
 		$ftpData = $this->_input->filter(array(
 			'ftp_upload' => XenForo_Input::BOOLEAN,
@@ -200,6 +208,20 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 		return $this->responseReroute('XenForo_ControllerAdmin_AddOn',
 			'Upgrade'); // Use the default add-on upgrade system for the rest.
+	}
+
+	protected function _assertValidProduct($product)
+	{
+		switch ($product)
+		{
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_XENFORO:
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_RESOURCE_MANAGER:
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_MEDIA_GALLERY:
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_ENHANCED_SEARCH:
+				return;
+			default:
+				throw $this->responseException($this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_product')));
+		}
 	}
 
 	/**

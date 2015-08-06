@@ -38,8 +38,6 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 	public function getLicenses($email, $password, &$cookies, $product = self::PRODUCT_XENFORO)
 	{
-		$this->_assertValidProduct($product);
-
 		$client = XenForo_Helper_Http::getClient(self::LOGIN_URL, array(
 			'useragent' => self::USER_AGENT
 		));
@@ -229,19 +227,5 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		}
 
 		return true;
-	}
-
-	protected function _assertValidProduct($product)
-	{
-		switch ($product)
-		{
-			case self::PRODUCT_XENFORO:
-			case self::PRODUCT_RESOURCE_MANAGER:
-			case self::PRODUCT_MEDIA_GALLERY:
-			case self::PRODUCT_ENHANCED_SEARCH:
-				return;
-			default:
-				throw new XenForo_Exception('Invalid product passed to Update model!');
-		}
 	}
 }
