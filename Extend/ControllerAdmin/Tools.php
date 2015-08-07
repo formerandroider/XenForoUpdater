@@ -212,16 +212,33 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 	protected function _assertValidProduct($product)
 	{
+		$addOns = XenForo_Application::get('addOns');
+
 		switch ($product)
 		{
 			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_XENFORO:
-			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_RESOURCE_MANAGER:
-			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_MEDIA_GALLERY:
-			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_ENHANCED_SEARCH:
 				return;
-			default:
-				throw $this->responseException($this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_product')));
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_RESOURCE_MANAGER:
+				if (isset($addOns['XenResource']))
+				{
+					return;
+				}
+				break;
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_MEDIA_GALLERY:
+				if (isset($addOns['XenGallery']))
+				{
+					return;
+				}
+				break;
+			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_ENHANCED_SEARCH:
+				if (isset($addOns['XenES']))
+				{
+					return;
+				}
+				break;
 		}
+
+		throw $this->responseException($this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_product')));
 	}
 
 	/**
