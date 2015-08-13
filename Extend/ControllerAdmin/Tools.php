@@ -4,12 +4,15 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 {
 	public function actionUpdate()
 	{
+		$this->_assertCanUpdate();
+
 		return $this->responseView('', 'liam_xenforo_update_initial');
 	}
 
 	public function actionUpdateStepProduct()
 	{
 		$this->_assertPostOnly();
+		$this->_assertCanUpdate();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -35,6 +38,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateStepCredentials()
 	{
 		$this->_assertPostOnly();
+		$this->_assertCanUpdate();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -55,6 +59,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateStepLicense()
 	{
 		$this->_assertPostOnly();
+		$this->_assertCanUpdate();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -97,6 +102,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateStepVersion()
 	{
 		$this->_assertPostOnly();
+		$this->_assertCanUpdate();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -139,6 +145,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 	public function actionUpdateStepUpdate()
 	{
 		$this->_assertPostOnly();
+		$this->_assertCanUpdate();
 
 		if (!$this->isConfirmedPost())
 		{
@@ -239,6 +246,14 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		}
 
 		throw $this->responseException($this->responseError(new XenForo_Phrase('liam_xenforoupdater_invalid_product')));
+	}
+
+	protected function _assertCanUpdate()
+	{
+		if (!LiamW_XenForoUpdater_Helper::zipInstalled())
+		{
+			throw $this->responseException($this->responseError(new XenForo_Phrase('liam_xenforoupdater_zip_extension_required')));
+		}
 	}
 
 	/**

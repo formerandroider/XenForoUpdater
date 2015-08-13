@@ -53,4 +53,9 @@ class LiamW_XenForoUpdater_Helper
 			opcache_invalidate($file, true);
 		}
 	}
+
+	public static function zipInstalled()
+	{
+		return extension_loaded('zip');
+	}
 }
