@@ -4,6 +4,11 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 {
 	public function actionUpdate()
 	{
+		if (!extension_loaded('zip'))
+		{
+			throw new XenForo_Exception("This addon requires ZipArchive support. This requires the 'zip' extension, which your host must be configured with.", true);
+		}
+
 		return $this->responseView('', 'liam_xenforo_update_initial');
 	}
 
