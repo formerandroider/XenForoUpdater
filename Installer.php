@@ -2,7 +2,7 @@
 
 class LiamW_XenForoUpdater_Installer
 {
-	protected function _canBeInstalled(&$error)
+	protected static function _canBeInstalled(&$error)
 	{
 		if (XenForo_Application::$versionId < 1020070)
 		{
