@@ -184,15 +184,27 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'xf_path' => XenForo_Input::STRING
 		));
 
-		$this->_getAutomaticUpdateModel()
-			->downloadAndCopy($data['cookies'], $data['download_version_id'], $data['license_id'], $ftpData,
+		$result = $this->_getAutomaticUpdateModel()
+			->downloadAndCopy($data['cookies'], $data['download_version_id'], $data['license_id'], $ftpData, $error,
 				$data['product']);
+
+		if (!$result)
+		{
+			if (!$error)
+			{
+				$error = new XenForo_Phrase('liam_xenforoupdater_unknown_error_occured_during_download_and_copy');
+			}
+
+			return $this->responseError($error);
+		}
 
 		switch ($data['product'])
 		{
 			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_XENFORO:
+				$boardUrl = XenForo_Application::getOptions()->boardUrl;
+
 				return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS,
-					'/install/index.php?upgrade/');
+					$boardUrl . '/install/index.php?upgrade/');
 				break;
 			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_RESOURCE_MANAGER:
 				$this->_request->setParam('addon_id', 'XenResource');

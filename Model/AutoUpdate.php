@@ -144,7 +144,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		return $downloadVersions;
 	}
 
-	public function downloadAndCopy($cookies, $downloadVersionId, $licenseId, array $ftpData, $product = self::PRODUCT_XENFORO)
+	public function downloadAndCopy($cookies, $downloadVersionId, $licenseId, array $ftpData, &$error, $product = self::PRODUCT_XENFORO)
 	{
 		$client = XenForo_Helper_Http::getClient(self::DOWNLOAD_URL, array(
 			'useragent' => self::USER_AGENT
@@ -173,21 +173,41 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		$client->setParameterPost('l', $licenseId);
 		$client->setParameterPost('d', $product);
 
-		$client->request('POST');
+		try
+		{
+			$client->request('POST');
+		} catch (Zend_Http_Exception $e)
+		{
+			XenForo_Error::logException($e, true, "Error downloading ZIP: ");
+			$error = new XenForo_Phrase('liam_xenforoupdater_error_downloading_zip_check_error_log');
+
+			return false;
+		}
 
 		XenForo_Helper_File::createDirectory($streamDir . $downloadVersionId . '/');
 
-		$zip = new Zend_Filter_Decompress(array(
-			'adapter' => 'Zip',
-			'options' => array(
-				'target' => $streamDir . $downloadVersionId . '/'
-			)
-		));
+		try
+		{
+			$zip = new Zend_Filter_Decompress(array(
+				'adapter' => 'Zip',
+				'options' => array(
+					'target' => $streamDir . $downloadVersionId . '/'
+				)
+			));
 
-		$zip->filter($streamFile);
+			$zip->filter($streamFile);
+		} catch (Zend_Filter_Exception $e)
+		{
+			XenForo_Error::logException($e, true, "Error extracting ZIP ($streamFile): ");
+			$error = new XenForo_Phrase('liam_xenforoupdater_error_extracting_zip_check_error_log');
+
+			return false;
+		}
 
 		if (!is_dir($streamDir . $downloadVersionId . '/'))
 		{
+			$error = new XenForo_Phrase('liam_xenforoupdater_error_extracting_zip_check_error_log');
+
 			return false;
 		}
 
@@ -215,15 +235,26 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 				$ftp->putAll($streamDir . $downloadVersionId . '/upload', $ftpData['xf_path']);
 			} catch (Exception $e)
 			{
-				XenForo_Error::logException($e);
+				XenForo_Error::logException($e, true, "Error copying files via FTP: ");
+				$error = new XenForo_Phrase('liam_xenforoupdater_error_copying_files_ftp_check_error_log');
 
 				return false;
 			}
 		}
 		else
 		{
-			LiamW_XenForoUpdater_Helper::recursiveCopy($streamDir . $downloadVersionId . '/upload',
-				XenForo_Application::getInstance()->getRootDir());
+			try
+			{
+
+				LiamW_XenForoUpdater_Helper::recursiveCopy($streamDir . $downloadVersionId . '/upload',
+					XenForo_Application::getInstance()->getRootDir());
+			} catch (Exception $e)
+			{
+				XenForo_Error::logException($e, true, "Error copying files: ");
+				$error = new XenForo_Phrase('liam_xenforoupdater_error_copying_files_check_error_log');
+
+				return false;
+			}
 		}
 
 		return true;
