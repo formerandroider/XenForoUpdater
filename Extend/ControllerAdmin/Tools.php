@@ -184,9 +184,11 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			'xf_path' => XenForo_Input::STRING
 		));
 
-		$result = $this->_getAutomaticUpdateModel()
-			->downloadAndCopy($data['cookies'], $data['download_version_id'], $data['license_id'], $ftpData, $error,
-				$data['product']);
+		$autoUpdateModel = $this->_getAutomaticUpdateModel();
+
+		$result = $autoUpdateModel->downloadAndCopy($data['cookies'], $data['download_version_id'], $data['license_id'],
+			$ftpData, $error,
+			$data['product']);
 
 		if (!$result)
 		{
@@ -198,10 +200,25 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 			return $this->responseError($error);
 		}
 
+		$options = XenForo_Application::getOptions();
+
+		switch ($options->liam_xenforoupdater_autopurge)
+		{
+			case 'all_auto':
+				$autoUpdateModel->purgeAllData();
+				break;
+			case 'zip_auto':
+				$autoUpdateModel->purgeZips();
+				break;
+			case 'dir_auto':
+				$autoUpdateModel->purgeDirs();
+				break;
+		}
+
 		switch ($data['product'])
 		{
 			case LiamW_XenForoUpdater_Model_AutoUpdate::PRODUCT_XENFORO:
-				$boardUrl = XenForo_Application::getOptions()->boardUrl;
+				$boardUrl = $options->boardUrl;
 
 				return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS,
 					$boardUrl . '/install/index.php?upgrade/');

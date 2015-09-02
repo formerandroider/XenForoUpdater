@@ -245,7 +245,6 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		{
 			try
 			{
-
 				LiamW_XenForoUpdater_Helper::recursiveCopy($streamDir . $downloadVersionId . '/upload',
 					XenForo_Application::getInstance()->getRootDir());
 			} catch (Exception $e)
@@ -258,5 +257,39 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		}
 
 		return true;
+	}
+
+	public function purgeAllData()
+	{
+		$updateDataPath = XenForo_Helper_File::getInternalDataPath() . '/xf_update/';
+
+		if (file_exists($updateDataPath))
+		{
+			LiamW_XenForoUpdater_Helper::recursiveDelete($updateDataPath);
+		}
+	}
+
+	public function purgeZips()
+	{
+		$updateDataPath = XenForo_Helper_File::getInternalDataPath() . '/xf_update/';
+
+		if (file_exists($updateDataPath))
+		{
+			LiamW_XenForoUpdater_Helper::recursiveDelete($updateDataPath, array('zip'));
+		}
+	}
+
+	public function purgeDirs()
+	{
+		$updateDataPath = XenForo_Helper_File::getInternalDataPath() . '/xf_update/';
+
+		$dir = new DirectoryIterator($updateDataPath);
+		foreach ($dir as $dirInfo)
+		{
+			if (!$dirInfo->isDot() && $dirInfo->isDir())
+			{
+				LiamW_XenForoUpdater_Helper::recursiveDelete($dirInfo->getRealPath());
+			}
+		}
 	}
 }
