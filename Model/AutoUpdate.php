@@ -14,6 +14,8 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 	const PRODUCT_MEDIA_GALLERY = 'xfmg';
 	const PRODUCT_ENHANCED_SEARCH = 'xfes';
 
+	const SESSION_COOKIE_JAR = 'xfUpdater_cookie_jar';
+
 	public function getAvailableProducts()
 	{
 		$activeAddons = XenForo_Application::get('addOns');
@@ -36,22 +38,18 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		return $availableProducts;
 	}
 
-	public function getLicenses($email, $password, &$cookies, $product = self::PRODUCT_XENFORO)
+	public function getLicenses($email, $password, $product = self::PRODUCT_XENFORO, Zend_Http_CookieJar $cookies = null)
 	{
 		$client = XenForo_Helper_Http::getClient(self::LOGIN_URL, array(
 			'useragent' => self::USER_AGENT
 		));
-		if (empty($cookies))
-		{
-			$client->setCookieJar();
-		}
-		else
-		{
-			$cookieJar = new Zend_Http_CookieJar();
-			$cookieJar->addCookie($cookies, 'https://xenforo.com');
 
-			$client->setCookieJar($cookieJar);
+		if ($cookies == null)
+		{
+			$cookies = new Zend_Http_CookieJar();
 		}
+
+		$client->setCookieJar($cookies);
 		$client->setParameterPost('email', $email);
 		$client->setParameterPost('password', $password);
 		$client->setParameterPost('redirect', self::CUSTOMER_REDIRECT);
@@ -98,29 +96,18 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 			$licenses[$licenseId] = $anchors->item(0)->nodeValue;
 		}
 
-		$cookies = empty($cookies) ? $client->getCookieJar()
-			->getAllCookies(Zend_Http_CookieJar::COOKIE_STRING_CONCAT) : $cookies;
+		$this->_saveCookieJar($client->getCookieJar());
 
 		return $licenses;
 	}
 
-	public function getVersions($cookies, $licenseId, $product = self::PRODUCT_XENFORO)
+	public function getVersions($licenseId, $product = self::PRODUCT_XENFORO)
 	{
 		$client = XenForo_Helper_Http::getClient(self::DOWNLOAD_URL, array(
 			'useragent' => self::USER_AGENT
 		));
 
-		$cookieJar = new Zend_Http_CookieJar();
-
-		foreach (explode(';', $cookies) AS $cookie)
-		{
-			if (!$cookie)
-				continue;
-
-			$cookieJar->addCookie($cookie, 'https://xenforo.com');
-		}
-
-		$client->setCookieJar($cookieJar);
+		$client->setCookieJar($this->_getSavedCookieJar());
 		$client->setParameterGet('l', $licenseId);
 		$client->setParameterGet('d', $product);
 
@@ -151,7 +138,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		return $downloadVersions;
 	}
 
-	public function downloadAndCopy($cookies, $downloadVersionId, $licenseId, array $ftpData, &$error, $product = self::PRODUCT_XENFORO)
+	public function downloadAndCopy($downloadVersionId, $licenseId, array $ftpData, &$error, $product = self::PRODUCT_XENFORO)
 	{
 		$client = XenForo_Helper_Http::getClient(self::DOWNLOAD_URL, array(
 			'useragent' => self::USER_AGENT
@@ -165,10 +152,8 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 			return false;
 		}
 
-		$cookieJar = new Zend_Http_CookieJar();
-		$cookieJar->addCookie($cookies, 'https://xenforo.com/customers');
-
-		$client->setCookieJar($cookieJar);
+		$client->setCookieJar($this->_getSavedCookieJar());
+		$this->_removeSavedCookieJar();
 
 		$client->setStream($streamFile);
 		$client->setParameterPost('download_version_id', $downloadVersionId);
@@ -298,5 +283,27 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 				LiamW_XenForoUpdater_Helper::recursiveDelete($dirInfo->getRealPath());
 			}
 		}
+	}
+
+	protected function _getSavedCookieJar()
+	{
+		$session = XenForo_Application::getSession();
+
+		if (!$session->isRegistered(self::SESSION_COOKIE_JAR))
+		{
+			throw new XenForo_Exception(new XenForo_Phrase('liam_xenforoupdater_cookie_jar_lost_start_again'), true);
+		}
+
+		return $session->get(self::SESSION_COOKIE_JAR);
+	}
+
+	protected function _saveCookieJar(Zend_Http_CookieJar $cookieJar)
+	{
+		XenForo_Application::getSession()->set(self::SESSION_COOKIE_JAR, $cookieJar);
+	}
+
+	protected function _removeSavedCookieJar()
+	{
+		XenForo_Application::getSession()->remove(self::SESSION_COOKIE_JAR);
 	}
 }

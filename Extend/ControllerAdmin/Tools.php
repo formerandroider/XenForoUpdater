@@ -80,7 +80,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		}
 
 		$licenses = $this->_getAutomaticUpdateModel()
-			->getLicenses($data['email'], $data['password'], $cookies, $data['product']);
+			->getLicenses($data['email'], $data['password'], $data['product']);
 
 		if (!$licenses)
 		{
@@ -89,12 +89,10 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 		$viewParams = array(
 			'licenses' => $licenses,
-			'cookies' => $cookies,
 			'product' => $data['product']
 		);
 
 		$viewParams['productName'] = new XenForo_Phrase('liam_xenforoupdater_update_' . $viewParams['product']);
-
 
 		return $this->responseView('', 'liam_xenforo_update_licenses', $viewParams);
 	}
@@ -111,16 +109,10 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 		$data = $this->_input->filter(array(
 			'license_id' => XenForo_Input::STRING,
-			'cookies' => XenForo_Input::STRING,
 			'product' => XenForo_Input::STRING
 		));
 
 		$this->_assertValidProduct($data['product']);
-
-		if (!$data['cookies'])
-		{
-			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
-		}
 
 		if (!$data['license_id'])
 		{
@@ -128,12 +120,11 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		}
 
 		$downloadVersions = $this->_getAutomaticUpdateModel()
-			->getVersions($data['cookies'], $data['license_id'], $data['product']);
+			->getVersions($data['license_id'], $data['product']);
 
 		$viewParams = array(
 			'versions' => $downloadVersions,
 			'licenseId' => $data['license_id'],
-			'cookies' => $data['cookies'],
 			'product' => $data['product']
 		);
 
@@ -155,7 +146,6 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		$data = $this->_input->filter(array(
 			'download_version_id' => XenForo_Input::STRING,
 			'license_id' => XenForo_Input::STRING,
-			'cookies' => XenForo_Input::STRING,
 			'product' => XenForo_Input::STRING
 		));
 
@@ -164,11 +154,6 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 		if (!$data['license_id'])
 		{
 			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_must_select_license'));
-		}
-
-		if (!$data['cookies'])
-		{
-			return $this->responseError(new XenForo_Phrase('liam_xenforoupdater_cookies_missing'));
 		}
 
 		@set_time_limit(0);
@@ -186,7 +171,7 @@ class LiamW_XenForoUpdater_Extend_ControllerAdmin_Tools extends XFCP_LiamW_XenFo
 
 		$autoUpdateModel = $this->_getAutomaticUpdateModel();
 
-		$result = $autoUpdateModel->downloadAndCopy($data['cookies'], $data['download_version_id'], $data['license_id'],
+		$result = $autoUpdateModel->downloadAndCopy($data['download_version_id'], $data['license_id'],
 			$ftpData, $error,
 			$data['product']);
 
