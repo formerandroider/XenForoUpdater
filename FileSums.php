@@ -18,7 +18,7 @@ class LiamW_XenForoUpdater_FileSums
 			'library/LiamW/XenForoUpdater/Helper.php' => '16f6cbd82eb3b25e03aa3a3edf43d9d2',
 			'library/LiamW/XenForoUpdater/Installer.php' => '8d5953c53b41a0dd7cda6758b34917ed',
 			'library/LiamW/XenForoUpdater/Listener.php' => '971f43608aa65892e8502ef7c23e0fe7',
-			'library/LiamW/XenForoUpdater/Model/AutoUpdate.php' => 'bd83df2addc2446d3fc67fca24b795d2',
+			'library/LiamW/XenForoUpdater/Model/AutoUpdate.php' => '66b2eee0f544a77bacf8be30215773cc',
 		);
 	}
 }
