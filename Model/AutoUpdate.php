@@ -48,7 +48,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		else
 		{
 			$cookieJar = new Zend_Http_CookieJar();
-			$cookieJar->addCookie($cookies, 'https://xenforo.com/customers');
+			$cookieJar->addCookie($cookies, 'https://xenforo.com');
 
 			$client->setCookieJar($cookieJar);
 		}
@@ -111,7 +111,14 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		));
 
 		$cookieJar = new Zend_Http_CookieJar();
-		$cookieJar->addCookie($cookies, 'https://xenforo.com/customers');
+
+		foreach (explode(';', $cookies) AS $cookie)
+		{
+			if (!$cookie)
+				continue;
+
+			$cookieJar->addCookie($cookie, 'https://xenforo.com');
+		}
 
 		$client->setCookieJar($cookieJar);
 		$client->setParameterGet('l', $licenseId);
