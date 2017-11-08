@@ -20,7 +20,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 	{
 		$activeAddons = XenForo_Application::get('addOns');
 
-		$availableProducts = array(self::PRODUCT_XENFORO);
+		$availableProducts = [self::PRODUCT_XENFORO];
 
 		if (isset($activeAddons['XenResource']))
 		{
@@ -40,9 +40,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 	public function getLicenses($email, $password, $product = self::PRODUCT_XENFORO, Zend_Http_CookieJar $cookies = null)
 	{
-		$client = XenForo_Helper_Http::getClient(self::LOGIN_URL, array(
-			'useragent' => self::USER_AGENT
-		));
+		$client = $this->_getClient(self::LOGIN_URL);
 
 		if ($cookies == null)
 		{
@@ -59,7 +57,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 		$domQuery = new Zend_Dom_Query($loginResponse->getBody());
 		$licensesQuery = $domQuery->query('.licenses .license');
 
-		$licenses = array();
+		$licenses = [];
 
 		foreach ($licensesQuery as $license)
 		{
@@ -67,12 +65,12 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 			$licenseId = false;
 
-			foreach ($license->lastChild->getElementsByTagName('a') as $downloadLink)
+			foreach ($license->getElementsByTagName('a') as $downloadLink)
 			{
 				$href = $downloadLink->attributes->getNamedItem('href')->textContent;
 
 				// Download link in format: customers/download/?l=<license_id>&d=<product>
-				$regex = sprintf('#^.*\?l\=([A-Z0-9]+)\&d=%s.*$#', $product);
+				$regex = sprintf('/^\/?customers\/download\/?\?l\=([A-Z0-9]+)\&d=%s$/', $product);
 				if (preg_match($regex, $href, $matches))
 				{
 					$licenseId = $matches[1];
@@ -103,9 +101,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 	public function getVersions($licenseId, $product = self::PRODUCT_XENFORO)
 	{
-		$client = XenForo_Helper_Http::getClient(self::DOWNLOAD_URL, array(
-			'useragent' => self::USER_AGENT
-		));
+		$client = $this->_getClient(self::DOWNLOAD_URL);
 
 		$client->setCookieJar($this->_getSavedCookieJar());
 		$client->setParameterGet('l', $licenseId);
@@ -121,16 +117,16 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 			return false;
 		}
 
-		$downloadVersions = array();
+		$downloadVersions = [];
 
 		foreach ($versionsQuery as $version)
 		{
-			$downloadVersions[$version->getAttribute('value')] = array(
+			$downloadVersions[$version->getAttribute('value')] = [
 				'value' => $version->getAttribute('value'),
 				'label' => $version->textContent,
 				'selected' => $version->getAttribute('selected') == 'selected' && ($product != self::PRODUCT_XENFORO || (substr(XenForo_Application::$versionId,
 								5, 1) == 7 || substr(XenForo_Application::$versionId, 5, 1) == 9))
-			);
+			];
 		}
 
 		krsort($downloadVersions);
@@ -140,9 +136,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 	public function downloadAndCopy($downloadVersionId, $licenseId, array $ftpData, &$error, $product = self::PRODUCT_XENFORO)
 	{
-		$client = XenForo_Helper_Http::getClient(self::DOWNLOAD_URL, array(
-			'useragent' => self::USER_AGENT
-		));
+		$client = $this->_getClient(self::DOWNLOAD_URL);
 
 		$streamDir = XenForo_Helper_File::getInternalDataPath() . '/xf_update/';
 		$streamFile = $streamDir . $downloadVersionId . '.zip';
@@ -180,12 +174,12 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 		try
 		{
-			$zip = new Zend_Filter_Decompress(array(
+			$zip = new Zend_Filter_Decompress([
 				'adapter' => 'Zip',
-				'options' => array(
+				'options' => [
 					'target' => $streamDir . $downloadVersionId . '/'
-				)
-			));
+				]
+			]);
 
 			$zip->filter($streamFile);
 		} catch (Zend_Filter_Exception $e)
@@ -267,7 +261,7 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 
 		if (file_exists($updateDataPath))
 		{
-			LiamW_XenForoUpdater_Helper::recursiveDelete($updateDataPath, array('zip'));
+			LiamW_XenForoUpdater_Helper::recursiveDelete($updateDataPath, ['zip']);
 		}
 	}
 
@@ -305,5 +299,12 @@ class LiamW_XenForoUpdater_Model_AutoUpdate extends XenForo_Model
 	protected function _removeSavedCookieJar()
 	{
 		XenForo_Application::getSession()->remove(self::SESSION_COOKIE_JAR);
+	}
+
+	protected function _getClient($url)
+	{
+		return XenForo_Helper_Http::getClient($url, [
+			'timeout' => 5
+		]);
 	}
 }
